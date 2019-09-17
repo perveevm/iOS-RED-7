@@ -46,4 +46,4 @@ RED-7 – весьма интересная, не очень популярна�
 
 ## Приложение
 
-[Правила игры RED-7](https://hobbyworld.ru/download/rules/Red7-rules_web1.pdf)
+[Правила игры RED-7](https://github.com/perveevm/iOS-RED-7/blob/master/Red7-rules.pdf)
