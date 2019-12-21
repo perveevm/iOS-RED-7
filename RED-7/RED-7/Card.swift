@@ -37,12 +37,15 @@ struct Card: Equatable, Comparable, CustomStringConvertible {
         return number
     }
     
+    public func isEqual(other: Card) -> Bool {
+        return color == other.color && number == other.number
+    }
+    
     static func < (lhs: Card, rhs: Card) -> Bool {
-        return lhs.number < rhs.number || (lhs.number == rhs.number && lhs.color.rawValue > rhs.color.rawValue)
+        return lhs.number < rhs.number || (lhs.number == rhs.number && lhs.color.rawValue < rhs.color.rawValue)
     }
     
     var description: String {
         return "Number: \(number), Color: \(color.rawValue)"
     }
-    
 }

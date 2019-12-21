@@ -15,6 +15,9 @@ class GameState {
     private var playerStates: Array<PlayerState>
     private var playerTurn: Int
     
+    private var newPalette: Card?
+    private var newCanvas: Card?
+    
     init(playersCount: Int) {
         self.playersCount = playersCount
         
@@ -64,7 +67,70 @@ class GameState {
         return self.playerStates[1 - playerTurn].getPaletteCards()
     }
     
-    public func getFocuseddHandCards() -> Array<Card> {
+    public func getFocusedHandCards() -> Array<Card> {
         return self.playerStates[playerTurn].getHandCards()
+    }
+    
+    public func isFocusedWinner() -> Bool {
+        let curCanvas = canvasCard
+        if newCanvas != nil {
+            canvasCard = newCanvas!
+        }
+        if newPalette != nil {
+            playerStates[playerTurn].addPaletteCard(card: newPalette!)
+        }
+        
+        let comp = compareStates(first: playerStates[playerTurn], second: playerStates[1 - playerTurn], canvasColor: canvasCard.getColor())
+        
+        if newCanvas != nil {
+            canvasCard = curCanvas
+        }
+        if newPalette != nil {
+            playerStates[playerTurn].removePaletteCard()
+        }
+        
+        return comp == 1
+    }
+    
+    public func endTurn() {
+        if newCanvas != nil {
+            canvasCard = newCanvas!
+            playerStates[playerTurn].removeHandCard(card: newCanvas!)
+        }
+        if newPalette != nil {
+            playerStates[playerTurn].addPaletteCard(card: newPalette!)
+            playerStates[playerTurn].removeHandCard(card: newPalette!)
+        }
+        playerTurn = 1 - playerTurn
+        newCanvas = nil
+        newPalette = nil
+    }
+    
+    public func updateCanvasCard(card: Card?) -> Bool {
+        if card == nil {
+            newCanvas = nil
+            return false
+        } else {
+            if newCanvas == nil {
+                newCanvas = card
+                return false
+            }
+            newCanvas = card
+            return true
+        }
+    }
+    
+    public func updatePaletteCard(card: Card?) -> Bool {
+        if card == nil {
+            newPalette = nil
+            return false
+        } else {
+            if newPalette == nil {
+                newPalette = card
+                return false
+            }
+            newPalette = card
+            return true
+        }
     }
 }

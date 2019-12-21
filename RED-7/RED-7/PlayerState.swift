@@ -32,6 +32,19 @@ class PlayerState {
     public func getPaletteCards() -> Array<Card> {
         return paletteCards
     }
+    
+    public func removePaletteCard() {
+        self.paletteCards.removeLast()
+    }
+    
+    public func removeHandCard(card: Card) {
+        for i in 0...self.handCards.count - 1 {
+            if self.handCards[i].isEqual(other: card) {
+                self.handCards.remove(at: i)
+                break
+            }
+        }
+    }
 }
 
 func compareStates(first: PlayerState, second: PlayerState, canvasColor: Color) -> Int {
