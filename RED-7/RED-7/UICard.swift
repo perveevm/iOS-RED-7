@@ -16,10 +16,12 @@ class UICard: UIView {
     
     var beginChangeState: (UICard, UIView?) -> Void
     var endChangeState: (UICard, UIView?) -> Void
+    var simpleChangedPosition: (UICard, UIView?, Bool) -> Void
         
-    init(card: Card, frame: CGRect, canDrag: Bool, controllerView: UIView, beginChangeState: @escaping (UICard, UIView?) -> Void, endChangeState: @escaping (UICard, UIView?) -> Void) {
+    init(card: Card, frame: CGRect, canDrag: Bool, controllerView: UIView, beginChangeState: @escaping (UICard, UIView?) -> Void, endChangeState: @escaping (UICard, UIView?) -> Void, simpleChangedPosition: @escaping (UICard, UIView?, Bool) -> Void) {
         self.beginChangeState = beginChangeState
         self.endChangeState = endChangeState
+        self.simpleChangedPosition = simpleChangedPosition
         
         super.init(frame: frame)
         
@@ -32,27 +34,29 @@ class UICard: UIView {
         // Adding color to card
         switch card.getColor() {
         case .blue:
-            self.backgroundColor = .cyan
+            self.backgroundColor = UIColor(red: 85.0 / 255.0, green: 184.0 / 255.0, blue: 223.0 / 255.0, alpha: 1.0)
         case .green:
-            self.backgroundColor = .green
+            self.backgroundColor = UIColor(red: 176.0 / 255.0, green: 203.0 / 255.0, blue: 84.0 / 255.0, alpha: 1.0)
         case .navy:
-            self.backgroundColor = .blue
+            self.backgroundColor = UIColor(red: 42.0 / 255.0, green: 106.0 / 255.0, blue: 171.0 / 255.0, alpha: 1.0)
         case .orange:
-            self.backgroundColor = .orange
+            self.backgroundColor = UIColor(red: 227.0 / 255.0, green: 128.0 / 255.0, blue: 66.0 / 255.0, alpha: 1.0)
         case .purple:
-            self.backgroundColor = .purple
+            self.backgroundColor = UIColor(red: 96.0 / 255.0, green: 62.0 / 255.0, blue: 143.0 / 255.0, alpha: 1.0)
         case .red:
-            self.backgroundColor = .red
+            self.backgroundColor = UIColor(red: 213.0 / 255.0, green: 55.0 / 255.0, blue: 61.0 / 255.0, alpha: 1.0)
         case .yellow:
-            self.backgroundColor = .yellow;
+            self.backgroundColor = UIColor(red: 243.0 / 255.0, green: 186.0 / 255.0, blue: 69.0 / 255.0, alpha: 1.0)
         }
+        
+        self.layer.cornerRadius = self.frame.width * 0.15
+        self.clipsToBounds = true
         
         // Adding text to card
         let text = UILabel()
         
         text.text = String(card.getNumber())
         text.frame = CGRect(x: 0.0, y: 0.0, width: self.frame.width, height: self.frame.height)
-//        text.center = CGPoint
         text.textColor = .white
         text.font = .systemFont(ofSize: self.frame.width)
         text.textAlignment = .center
@@ -78,18 +82,7 @@ class UICard: UIView {
             }
             
             dragGesture.setTranslation(CGPoint.zero, in: self.superview)
-//            self.superview?.bringSubviewToFront(self)
-            
-//            controllerView.bringSubviewToFront(self.superview!)
-//            controllerView.bringSubviewToFront(self)
-            
-//            if self.superview?.superview != nil {
-//                self.superview?.superview?.bringSubviewToFront(self.superview!)
-//            }
         case .changed:
-//            self.superview?.bringSubviewToFront(self)
-//            controllerView.bringSubviewToFront(self.superview!)
-//            controllerView.bringSubviewToFront(self)
             var translation = dragGesture.translation(in: self.superview)
             translation.x += self.center.x
             translation.y += self.center.y
@@ -98,11 +91,14 @@ class UICard: UIView {
             
             dragGesture.setTranslation(CGPoint.zero, in: self.superview)
             
-//            if (controllerView.subviews[1].point(inside: dragGesture.location(in: controllerView.subviews[1]), with: nil)) {
-//                controllerView.subviews[1].backgroundColor = .red
-//            } else {
-//                controllerView.subviews[1].backgroundColor = .black
-//            }
+            for subview in controllerView.subviews {
+                if subview.point(inside: dragGesture.location(in: subview), with: nil) {
+                    simpleChangedPosition(self, subview, true)
+//                    break
+                } else {
+                    simpleChangedPosition(self, subview, false)
+                }
+            }
         case .ended:
             var destination: UIView?
             
@@ -110,32 +106,13 @@ class UICard: UIView {
                 if subview.point(inside: dragGesture.location(in: subview), with: nil) {
                     destination = subview
                 }
+                simpleChangedPosition(self, subview, false)
             }
-//
-//            changeState(self, )
-//
-//            if controllerView.subviews[0].point(inside: dragGesture.location(in: controllerView.subviews[0]), with: nil) {
-//                print("canvas")
-//            } else if (controllerView.subviews[1].point(inside: dragGesture.location(in: controllerView.subviews[1]), with: nil)) {
-//                controllerView.subviews[1].backgroundColor = .black
-//                print("palette")
-//            } else {
-//                print("nothing")
-//            }
             
             // TODO: find destination
             
             beginChangeState(self, destination)
             endChangeState(self, destination)
-//            controllerView.subviews[1].backgroundColor = .black
-            
-//            if destination != nil {
-//                changeState(self, destination!)
-//            } else {
-//                UIView.animate(withDuration: 0.5) {
-//                    self.center = self.defaultCenter
-//                }
-//            }
         default:
             ()
         }

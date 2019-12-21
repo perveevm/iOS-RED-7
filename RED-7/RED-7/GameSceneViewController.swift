@@ -18,6 +18,8 @@ class GameSceneViewController: UIViewController {
     private var otherPlayerPalette: UIView!
     private var endTurnButton: UIButton!
     
+    private var backgroundImage: UIImageView!
+    
     private var playersCount = 2
     private var PHI = 1.618
     private var NORM_COEFFICIENT = 3.5
@@ -26,6 +28,11 @@ class GameSceneViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        backgroundImage = UIImageView()
+        backgroundImage.image = UIImage(named: "background")
+        backgroundImage.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 2)
+        backgroundImage.contentMode = UIView.ContentMode.scaleAspectFill
         
         gameState = GameState(playersCount: self.playersCount)
         
@@ -39,6 +46,8 @@ class GameSceneViewController: UIViewController {
         CARD_WIDTH = coef / PHI
         CARD_HEIGHT = coef
         
+        view.insertSubview(backgroundImage, at: 0)
+        
         self.view.addSubview(canvas)
         self.view.addSubview(focusedPlayerPalette)
         self.view.addSubview(otherPlayerPalette)
@@ -48,7 +57,6 @@ class GameSceneViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.view.backgroundColor = .white
     }
     
     override func viewWillLayoutSubviews() {
@@ -58,37 +66,55 @@ class GameSceneViewController: UIViewController {
         let canvasHeight = coef
         let canvasWidth = coef / PHI
         
-        canvas.backgroundColor = .black
-        canvas.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.center.y) - canvasHeight / 2.0, width: canvasWidth, height: canvasHeight)
+        // Set up background image
+        backgroundImage.frame = view.bounds
+        backgroundImage.center = CGPoint(x: view.bounds.size.width / 2, y: view.bounds.size.height / 2)
         
-        focusedPlayerPalette.backgroundColor = .black
+        // Layout canvas
+        canvas.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
+        canvas.layer.cornerRadius = CGFloat(CARD_WIDTH * 0.15)
+        canvas.layer.borderWidth = 1
+        canvas.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        canvas.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.center.y) - canvasHeight / 2.0, width: canvasWidth, height: canvasHeight)
+
+        // Layout palettes
+        focusedPlayerPalette.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
+        focusedPlayerPalette.layer.cornerRadius = CGFloat(CARD_WIDTH * 0.15)
+        focusedPlayerPalette.layer.borderWidth = 1
+        focusedPlayerPalette.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         focusedPlayerPalette.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height / 2.0) - canvasHeight / 2.0, width: Double(self.view.frame.width * 0.7), height: canvasHeight)
         
-        otherPlayerPalette.backgroundColor = .black
+        otherPlayerPalette.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
+        otherPlayerPalette.layer.cornerRadius = CGFloat(CARD_WIDTH * 0.15)
+        otherPlayerPalette.layer.borderWidth = 1
+        otherPlayerPalette.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         otherPlayerPalette.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height * (1.0 / 3.0)) - canvasHeight, width: Double(self.view.frame.width * 0.7), height: canvasHeight)
     
-        focusedPlayerHand.backgroundColor = .black
+        // Layout hand
+        focusedPlayerHand.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
+        focusedPlayerHand.layer.cornerRadius = CGFloat(CARD_WIDTH * 0.15)
+        focusedPlayerHand.layer.borderWidth = 1
+        focusedPlayerHand.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         focusedPlayerHand.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height * (2.0 / 3.0)), width: Double(self.view.frame.width * 0.7), height: canvasHeight)
         
-        addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-//        canvas.addSubview(UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view))
-        focusedPlayerPalette.addSubview(UICard(card: gameState.getFocusedPaletteCards()[0], frame: CGRect(x: Double(focusedPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-        otherPlayerPalette.addSubview(UICard(card: gameState.getOtherPaletteCards()[0], frame: CGRect(x: Double(otherPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
+        // Layout canvas card
+        addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
         
+        // Layout palette cards
+        focusedPlayerPalette.addSubview(UICard(card: gameState.getFocusedPaletteCards()[0], frame: CGRect(x: Double(focusedPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        otherPlayerPalette.addSubview(UICard(card: gameState.getOtherPaletteCards()[0], frame: CGRect(x: Double(otherPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        
+        // Layout buttons
         endTurnButton.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.frame.height * (2.0 / 3.0)), width: canvasWidth, height: 30)
         endTurnButton.backgroundColor = .black
         endTurnButton.addTarget(self, action: #selector(endTurn), for: .touchUpInside)
         endTurnButton.setTitle("Завершить ход", for: .normal)
         
+        // Layout hand cards
         let focusedHandCards = gameState.getFocusedHandCards()
         for card in focusedHandCards {
-            addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
+            addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
         }
-//        for i in 0...focusedHandCards.count - 1 {
-//            let currentX = Double(focusedPlayerHand.frame.width) / Double(focusedHandCards.count + 1) * Double(i + 1) - CARD_WIDTH / 2.0
-//
-//            focusedPlayerHand.addSubview(UICard(card: focusedHandCards[i], frame: CGRect(x: currentX, y: 0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view))
-//        }
     }
     
     @objc private func endTurn() {
@@ -100,40 +126,41 @@ class GameSceneViewController: UIViewController {
         }
         
         let alert = UIAlertController(title: "Ход завершен", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "ОК", style: .default, handler: nil))
+        
+        alert.addAction(UIAlertAction(title: "ОК", style: .default, handler: { (UIAlertAction) -> Void in
+            self.gameState.endTurn()
+            
+            self.canvas.subviews.forEach { (view) in
+                view.removeFromSuperview()
+            }
+            self.focusedPlayerHand.subviews.forEach { (view) in
+                view.removeFromSuperview()
+            }
+            self.focusedPlayerPalette.subviews.forEach { (view) in
+                view.removeFromSuperview()
+            }
+            self.otherPlayerPalette.subviews.forEach { (view) in
+                view.removeFromSuperview()
+            }
+            
+            self.addCardToCanvas(card: UICard(card: self.gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: self.CARD_WIDTH, height: self.CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: self.beginChangeState, endChangeState: self.endChangeState, simpleChangedPosition: self.simpleChangedPosition))
+            
+            let focusedHandCards = self.gameState.getFocusedHandCards()
+            for card in focusedHandCards {
+                self.addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: self.CARD_WIDTH, height: self.CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: self.beginChangeState, endChangeState: self.endChangeState, simpleChangedPosition: self.simpleChangedPosition))
+            }
+            let focusedPaletteCards = self.gameState.getFocusedPaletteCards()
+            for card in focusedPaletteCards {
+                self.addCardToPalette(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: self.CARD_WIDTH, height: self.CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: self.beginChangeState, endChangeState: self.endChangeState, simpleChangedPosition: self.simpleChangedPosition))
+            }
+            
+            let otherPaletteCards = self.gameState.getOtherPaletteCards()
+            for card in otherPaletteCards {
+                self.addCardToOtherPalette(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: self.CARD_WIDTH, height: self.CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: self.beginChangeState, endChangeState: self.endChangeState, simpleChangedPosition: self.simpleChangedPosition))
+            }
+        }))
+        
         self.present(alert, animated: true, completion: nil)
-        
-        gameState.endTurn()
-        
-        canvas.subviews.forEach { (view) in
-            view.removeFromSuperview()
-        }
-        focusedPlayerHand.subviews.forEach { (view) in
-            view.removeFromSuperview()
-        }
-        focusedPlayerPalette.subviews.forEach { (view) in
-            view.removeFromSuperview()
-        }
-        otherPlayerPalette.subviews.forEach { (view) in
-            view.removeFromSuperview()
-        }
-        
-        addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-        
-        let focusedHandCards = gameState.getFocusedHandCards()
-        for card in focusedHandCards {
-            addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-        }
-        
-        let focusedPaletteCards = gameState.getFocusedPaletteCards()
-        for card in focusedPaletteCards {
-            addCardToPalette(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-        }
-        
-        let otherPaletteCards = gameState.getOtherPaletteCards()
-        for card in otherPaletteCards {
-            addCardToOtherPalette(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState))
-        }
     }
     
     private func addCardToCanvas(card: UICard) {
@@ -145,7 +172,6 @@ class GameSceneViewController: UIViewController {
     
     private func removeLastCardFromCanvas(card: UICard) {
         card.removeFromSuperview()
-//        canvas.subviews[canvas.subviews.count - 1].removeFromSuperview()
     }
     
     private func relayoutCards(view: UIView) {
@@ -166,16 +192,12 @@ class GameSceneViewController: UIViewController {
     }
     
     private func removeCardFromHand(card: UICard) {
-        print(focusedPlayerHand.subviews.count)
         card.removeFromSuperview()
-        print(focusedPlayerHand.subviews.count)
         relayoutCards(view: focusedPlayerHand)
     }
     
     private func addCardToPalette(card: UICard) {
-        print(focusedPlayerPalette.subviews.count)
         focusedPlayerPalette.addSubview(card)
-        print(focusedPlayerPalette.subviews.count)
         relayoutCards(view: focusedPlayerPalette)
     }
     
@@ -189,19 +211,39 @@ class GameSceneViewController: UIViewController {
         relayoutCards(view: focusedPlayerPalette)
     }
     
-    private func beginChangeState(card: UICard, destination: UIView?) {
-        if card.superview!.isEqual(canvas) {
-            gameState.updateCanvasCard(card: nil)
-            removeLastCardFromCanvas(card: card)
-        } else if card.superview!.isEqual(focusedPlayerPalette) {
-            gameState.updatePaletteCard(card: nil)
-            removeCardFromPalette(card: card)
-        } else {
-            removeCardFromHand(card: card)
+    private func simpleChangedPosition(card: UICard, destination: UIView?, needColor: Bool) {
+        if destination == nil {
+            return
         }
         
-//        self.view.addSubview(card)
-//        self.view.bringSubviewToFront(card)
+        if needColor && (destination!.isEqual(canvas) || destination!.isEqual(focusedPlayerHand) || destination!.isEqual(focusedPlayerPalette)) {
+            destination!.layer.borderColor = CGColor(srgbRed: 0.0, green: 0.0, blue: 0.0, alpha: 0.5)
+            
+            if !destination!.isEqual(canvas) {
+                destination!.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.8)
+            }
+        } else if !needColor && (destination!.isEqual(canvas) || destination!.isEqual(focusedPlayerHand) || destination!.isEqual(focusedPlayerPalette)) {
+            destination!.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            destination!.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
+        }
+    }
+    
+    private func beginChangeState(card: UICard, destination: UIView?) {
+        if card.superview!.isEqual(canvas) {
+            _ = gameState.updateCanvasCard(card: nil)
+            removeLastCardFromCanvas(card: card)
+            
+            canvas.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        } else if card.superview!.isEqual(focusedPlayerPalette) {
+            _ = gameState.updatePaletteCard(card: nil)
+            removeCardFromPalette(card: card)
+            
+            focusedPlayerPalette.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        } else {
+            removeCardFromHand(card: card)
+            
+            focusedPlayerHand.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        }
     }
     
     private func endChangeState(card: UICard, destination: UIView?) {
@@ -232,6 +274,5 @@ class GameSceneViewController: UIViewController {
                 addCardToHand(card: card)
             }
         }
-        print("kek")
     }
 }
