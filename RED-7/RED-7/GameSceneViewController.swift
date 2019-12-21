@@ -26,6 +26,8 @@ class GameSceneViewController: UIViewController {
     private var CARD_WIDTH = 0.0
     private var CARD_HEIGHT = 0.0
     
+    private var firstLoad = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -98,11 +100,15 @@ class GameSceneViewController: UIViewController {
         focusedPlayerHand.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height * (2.0 / 3.0)), width: Double(self.view.frame.width * 0.7), height: canvasHeight)
         
         // Layout canvas card
-        addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        if firstLoad {
+            addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        }
         
         // Layout palette cards
-        focusedPlayerPalette.addSubview(UICard(card: gameState.getFocusedPaletteCards()[0], frame: CGRect(x: Double(focusedPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
-        otherPlayerPalette.addSubview(UICard(card: gameState.getOtherPaletteCards()[0], frame: CGRect(x: Double(otherPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        if firstLoad {
+            focusedPlayerPalette.addSubview(UICard(card: gameState.getFocusedPaletteCards()[0], frame: CGRect(x: Double(focusedPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState:         endChangeState, simpleChangedPosition: simpleChangedPosition))
+            otherPlayerPalette.addSubview(UICard(card: gameState.getOtherPaletteCards()[0], frame: CGRect(x: Double(otherPlayerPalette.frame.width / 2.0) - CARD_WIDTH / 2.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        }
         
         // Layout buttons
         endTurnButton.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.frame.height * (2.0 / 3.0)), width: canvasWidth, height: 30)
@@ -111,10 +117,14 @@ class GameSceneViewController: UIViewController {
         endTurnButton.setTitle("Завершить ход", for: .normal)
         
         // Layout hand cards
-        let focusedHandCards = gameState.getFocusedHandCards()
-        for card in focusedHandCards {
-            addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+        if firstLoad {
+            let focusedHandCards = gameState.getFocusedHandCards()
+            for card in focusedHandCards {
+                addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+            }
         }
+        
+        firstLoad = false
     }
     
     @objc private func endTurn() {
