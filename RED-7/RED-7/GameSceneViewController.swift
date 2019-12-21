@@ -173,6 +173,8 @@ class GameSceneViewController: UIViewController {
     }
     
     private func addCardToCanvas(card: UICard) {
+        card.center.x -= canvas.frame.minX
+        card.center.y -= canvas.frame.minY
         canvas.addSubview(card)
         UIView.animate(withDuration: 0.5) {
             card.center = CGPoint(x: self.canvas.frame.width / 2.0, y: self.canvas.frame.height / 2.0)
@@ -196,6 +198,8 @@ class GameSceneViewController: UIViewController {
     }
     
     private func addCardToHand(card: UICard) {
+        card.center.x -= focusedPlayerHand.frame.minX
+        card.center.y -= focusedPlayerHand.frame.minY
         focusedPlayerHand.addSubview(card)
         relayoutCards(view: focusedPlayerHand)
     }
@@ -206,11 +210,15 @@ class GameSceneViewController: UIViewController {
     }
     
     private func addCardToPalette(card: UICard) {
+        card.center.x -= focusedPlayerPalette.frame.minX
+        card.center.y -= focusedPlayerPalette.frame.minY
         focusedPlayerPalette.addSubview(card)
         relayoutCards(view: focusedPlayerPalette)
     }
     
     private func addCardToOtherPalette(card: UICard) {
+        card.center.x -= otherPlayerPalette.frame.minX
+        card.center.y -= otherPlayerPalette.frame.minY
         otherPlayerPalette.addSubview(card)
         relayoutCards(view: otherPlayerPalette)
     }
@@ -241,15 +249,21 @@ class GameSceneViewController: UIViewController {
         if card.superview!.isEqual(canvas) {
             _ = gameState.updateCanvasCard(card: nil)
             removeLastCardFromCanvas(card: card)
+            card.center.x += canvas.frame.minX
+            card.center.y += canvas.frame.minY
             
             canvas.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         } else if card.superview!.isEqual(focusedPlayerPalette) {
             _ = gameState.updatePaletteCard(card: nil)
             removeCardFromPalette(card: card)
+            card.center.x += focusedPlayerPalette.frame.minX
+            card.center.y += focusedPlayerPalette.frame.minY
             
             focusedPlayerPalette.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         } else {
             removeCardFromHand(card: card)
+            card.center.x += focusedPlayerHand.frame.minX
+            card.center.y += focusedPlayerHand.frame.minY
             
             focusedPlayerHand.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         }
@@ -265,6 +279,9 @@ class GameSceneViewController: UIViewController {
                 if needErase {
                     let erasedCard = canvas.subviews.last! as! UICard
                     removeLastCardFromCanvas(card: erasedCard)
+                    erasedCard.center.x += canvas.frame.minX
+                    erasedCard.center.y += canvas.frame.minY
+                    
                     addCardToHand(card: erasedCard)
                 }
     
@@ -273,9 +290,12 @@ class GameSceneViewController: UIViewController {
                 let needErase = gameState.updatePaletteCard(card: card.getCard())
                 
                 if needErase {
-                    let eraseCard = focusedPlayerPalette.subviews.last! as! UICard
-                    removeCardFromPalette(card: eraseCard)
-                    addCardToHand(card: eraseCard)
+                    let erasedCard = focusedPlayerPalette.subviews.last! as! UICard
+                    removeCardFromPalette(card: erasedCard)
+                    erasedCard.center.x += focusedPlayerPalette.frame.minX
+                    erasedCard.center.y += focusedPlayerPalette.frame.minY
+                    
+                    addCardToHand(card: erasedCard)
                 }
                 
                 addCardToPalette(card: card)
