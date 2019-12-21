@@ -117,7 +117,7 @@
         <!--Game Scene View Controller-->
         <scene sceneID="jhu-I3-t56">
             <objects>
-                <viewController id="NVu-Ok-fxB" customClass="GameSceneViewController" customModule="RED_7" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalTransitionStyle="flipHorizontal" id="NVu-Ok-fxB" customClass="GameSceneViewController" customModule="RED_7" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Iyn-SQ-Nbb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -130,4 +130,7 @@
             <point key="canvasLocation" x="1167" y="-66"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="uQR-eF-OYn"/>
+    </inferredMetricsTieBreakers>
 </document>

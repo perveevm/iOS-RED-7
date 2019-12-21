@@ -64,9 +64,8 @@ class GameSceneViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        let coef = Double(self.view.frame.height) / NORM_COEFFICIENT
-        let canvasHeight = coef
-        let canvasWidth = coef / PHI
+        let canvasHeight = CARD_HEIGHT
+        let canvasWidth = CARD_WIDTH
         
         // Set up background image
         backgroundImage.frame = view.bounds
@@ -101,7 +100,7 @@ class GameSceneViewController: UIViewController {
         
         // Layout canvas card
         if firstLoad {
-            addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: coef / PHI, height: coef), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
+            addCardToCanvas(card: UICard(card: gameState.getCanvasCard(), frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: false, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
         }
         
         // Layout palette cards
