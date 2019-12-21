@@ -9,22 +9,23 @@
 import UIKit
 
 class MainMenuViewController: UIViewController {
-
+    
+    @IBOutlet weak var settingsButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        settingsButton.setTitle("Настройки", for: .normal)
+        settingsButton.backgroundColor = .orange
+        
+        view.addSubview(settingsButton)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewWillLayoutSubviews() {
+        settingsButton.frame = CGRect(x: view.frame.width / 3, y: view.frame.height / 2 - 35, width: view.frame.width / 3, height: 70)
     }
-    */
-
+    
+    @IBAction func settingsButtonPressed(_ sender: Any) {
+        performSegue(withIdentifier: "OpenSettings", sender: self)
+    }
 }
