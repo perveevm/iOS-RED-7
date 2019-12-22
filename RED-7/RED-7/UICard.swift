@@ -56,16 +56,16 @@ class UICard: UIView {
         let text = UILabel()
         
         text.text = String(card.getNumber())
-        
-        if card.getNumber() == 0 {
-            text.text = ""
-        }
-        
         text.frame = CGRect(x: 0.0, y: 0.0, width: self.frame.width, height: self.frame.height)
         text.textColor = .white
         text.font = .systemFont(ofSize: self.frame.width)
         text.textAlignment = .center
         text.backgroundColor = .clear
+        
+        if card.getNumber() == 0 {
+            text.text = "Холст"
+            text.font = .systemFont(ofSize: self.frame.width / 4.0)
+        }
 
         self.addSubview(text)
         

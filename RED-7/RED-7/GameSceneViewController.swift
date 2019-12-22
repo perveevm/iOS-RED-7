@@ -16,7 +16,14 @@ class GameSceneViewController: UIViewController {
     private var canvas: UIView!
     private var otherPlayerHand: UIView!
     private var otherPlayerPalette: UIView!
+    
     private var endTurnButton: UIButton!
+    private var loseButton: UIButton!
+    
+    private var focusedPlayerLabelLeft: UILabel!
+    private var focusedPlayerLabelRight: UILabel!
+    private var otherPlayerLabelLeft: UILabel!
+    private var otherPlayerLabelRight: UILabel!
     
     private var backgroundImage: UIImageView!
     
@@ -42,7 +49,15 @@ class GameSceneViewController: UIViewController {
         focusedPlayerPalette = UIView()
         otherPlayerPalette = UIView()
         focusedPlayerHand = UIView()
+        
+        
         endTurnButton = UIButton()
+        loseButton = UIButton()
+        
+        focusedPlayerLabelLeft = UILabel()
+        focusedPlayerLabelRight = UILabel()
+        otherPlayerLabelLeft = UILabel()
+        otherPlayerLabelRight = UILabel()
         
         let coef = Double(self.view.frame.height) / NORM_COEFFICIENT
         CARD_WIDTH = coef / PHI
@@ -50,10 +65,15 @@ class GameSceneViewController: UIViewController {
         
         view.insertSubview(backgroundImage, at: 0)
         
+        self.view.addSubview(focusedPlayerLabelLeft)
+        self.view.addSubview(focusedPlayerLabelRight)
+        self.view.addSubview(otherPlayerLabelLeft)
+        self.view.addSubview(otherPlayerLabelRight)
         self.view.addSubview(canvas)
         self.view.addSubview(focusedPlayerPalette)
         self.view.addSubview(otherPlayerPalette)
         self.view.addSubview(endTurnButton)
+        self.view.addSubview(loseButton)
         self.view.addSubview(focusedPlayerHand)
     }
     
@@ -76,7 +96,7 @@ class GameSceneViewController: UIViewController {
         canvas.layer.cornerRadius = CGFloat(CARD_WIDTH * 0.15)
         canvas.layer.borderWidth = 1
         canvas.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-        canvas.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.center.y) - canvasHeight / 2.0, width: canvasWidth, height: canvasHeight)
+        canvas.frame = CGRect(x: Double(self.view.frame.width * 0.9) - canvasWidth / 2.0, y: Double(self.view.center.y) - canvasHeight / 2.0, width: canvasWidth, height: canvasHeight)
 
         // Layout palettes
         focusedPlayerPalette.backgroundColor = UIColor(displayP3Red: 217.0 / 255.0, green: 101.0 / 255.0, blue: 120.0 / 255.0, alpha: 0.4)
@@ -110,10 +130,21 @@ class GameSceneViewController: UIViewController {
         }
         
         // Layout buttons
-        endTurnButton.frame = CGRect(x: Double(self.view.frame.width * 0.7) + Double(self.view.frame.width * 0.15), y: Double(self.view.frame.height * (2.0 / 3.0)), width: canvasWidth, height: 30)
-        endTurnButton.backgroundColor = .black
+        endTurnButton.frame = CGRect(x: Double(self.view.frame.width * 0.8) + Double(self.view.frame.width * 0.2 * 0.05), y: Double(self.view.frame.height * (1.0 / 3.0)) - canvasHeight, width: Double(self.view.frame.width * 0.2 * 0.9), height: canvasHeight / 3.0)
+        endTurnButton.backgroundColor = UIColor(red: 176.0 / 255.0, green: 203.0 / 255.0, blue: 84.0 / 255.0, alpha: 1.0)
         endTurnButton.addTarget(self, action: #selector(endTurn), for: .touchUpInside)
-        endTurnButton.setTitle("Завершить ход", for: .normal)
+        endTurnButton.setTitle("Закончить ход", for: .normal)
+        endTurnButton.layer.cornerRadius = endTurnButton.frame.height * 0.15
+        endTurnButton.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        endTurnButton.layer.borderWidth = 1
+        
+        loseButton.frame = CGRect(x: Double(self.view.frame.width * 0.8) + Double(self.view.frame.width * 0.2 * 0.05), y: Double(self.view.frame.height * (1.0 / 3.0)) - canvasHeight / 3.0, width: Double(self.view.frame.width * 0.2 * 0.9), height: canvasHeight / 3.0)
+        loseButton.backgroundColor = UIColor(red: 213.0 / 255.0, green: 55.0 / 255.0, blue: 61.0 / 255.0, alpha: 1.0)
+        loseButton.addTarget(self, action: #selector(lose), for: .touchUpInside)
+        loseButton.setTitle("Сдаться", for: .normal)
+        loseButton.layer.cornerRadius = loseButton.frame.height * 0.15
+        loseButton.layer.borderColor = CGColor(srgbRed: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        loseButton.layer.borderWidth = 1
         
         // Layout hand cards
         if firstLoad {
@@ -122,6 +153,26 @@ class GameSceneViewController: UIViewController {
                 addCardToHand(card: UICard(card: card, frame: CGRect(x: 0.0, y: 0.0, width: CARD_WIDTH, height: CARD_HEIGHT), canDrag: true, controllerView: self.view, beginChangeState: beginChangeState, endChangeState: endChangeState, simpleChangedPosition: simpleChangedPosition))
             }
         }
+        
+        focusedPlayerLabelLeft.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height / 2.0) - canvasHeight / 2.0, width: Double(self.view.frame.width * 0.7) / 2.0, height: canvasHeight)
+        focusedPlayerLabelLeft.text = "Ваша"
+        focusedPlayerLabelLeft.textAlignment = .center
+        focusedPlayerLabelLeft.font = .systemFont(ofSize: focusedPlayerLabelLeft.frame.width / 10.0)
+        
+        focusedPlayerLabelRight.frame = CGRect(x: Double(self.view.frame.width * 0.1) + Double(self.view.frame.width * 0.7) / 2.0, y: Double(self.view.frame.height / 2.0) - canvasHeight / 2.0, width: Double(self.view.frame.width * 0.7) / 2.0, height: canvasHeight)
+        focusedPlayerLabelRight.text = "палитра"
+        focusedPlayerLabelRight.textAlignment = .center
+        focusedPlayerLabelRight.font = .systemFont(ofSize: focusedPlayerLabelLeft.frame.width / 10.0)
+        
+        otherPlayerLabelLeft.frame = CGRect(x: Double(self.view.frame.width * 0.1), y: Double(self.view.frame.height * (1.0 / 3.0)) - canvasHeight, width: Double(self.view.frame.width * 0.7) / 2.0, height: canvasHeight)
+        otherPlayerLabelLeft.text = "Палитра"
+        otherPlayerLabelLeft.textAlignment = .center
+        otherPlayerLabelLeft.font = .systemFont(ofSize: focusedPlayerLabelLeft.frame.width / 10.0)
+        
+        otherPlayerLabelRight.frame = CGRect(x: Double(self.view.frame.width * 0.1) + Double(self.view.frame.width * 0.7) / 2.0, y: Double(self.view.frame.height * (1.0 / 3.0)) - canvasHeight, width: Double(self.view.frame.width * 0.7) / 2.0, height: canvasHeight)
+        otherPlayerLabelRight.text = "противника"
+        otherPlayerLabelRight.textAlignment = .center
+        otherPlayerLabelRight.font = .systemFont(ofSize: focusedPlayerLabelLeft.frame.width / 10.0)
         
         firstLoad = false
     }
@@ -172,6 +223,13 @@ class GameSceneViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    @objc private func lose() {
+        let alert = UIAlertController(title: "Поражение", message: "Вы проиграли", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ОК", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+        return
+    }
+    
     private func addCardToCanvas(card: UICard) {
         card.center.x -= canvas.frame.minX
         card.center.y -= canvas.frame.minY
@@ -187,8 +245,10 @@ class GameSceneViewController: UIViewController {
     
     private func relayoutCards(view: UIView) {
         let cardsNumber = view.subviews.count
+        let segmentWidth = Double(view.frame.width) / Double(cardsNumber + 1)
+        
         for i in 0...cardsNumber - 1 {
-            let currentX = Double(view.frame.width) / Double(cardsNumber + 1) * Double(i + 1)
+            let currentX = segmentWidth * Double(i) + segmentWidth
             
             UIView.animate(withDuration: 0.5) {
                 view.subviews[i].center.x = CGFloat(currentX)
